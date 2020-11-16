@@ -12,6 +12,10 @@ struct PedBelief {
     int maxlikely_goal() const;
 };
 
+struct PedHistory {
+    std::vector<double> x, y;
+};
+
 class WorldModel {
 public:
 
@@ -52,6 +56,7 @@ public:
     std::vector<double> goals;
     double freq;
     double in_front_angle_cos;
+    std::vector<PedHistory> history(ModelParams::N_PED_IN);
 };
 
 class WorldStateTracker {

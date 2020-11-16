@@ -334,9 +334,10 @@ void WorldModel::PedStep(PedStruct &ped, Random& random) {
         cout << "dh nan: " << dh << "\n";
         assert((!std::isnan(move.dw)) && (!std::isnan(move.dh)));
     }
-
     ped.pos.x += move.dw;
     ped.pos.y += move.dh;
+    history[ped.id].x.insert(ped.pos.x)
+    history[ped.id].y.insert(ped.pos.y)
     return;
 }
 
@@ -400,6 +401,8 @@ double WorldModel::ISPedStep(CarStruct &car, PedStruct &ped, Random& random) {
         MyVector move(final_angle, ped.vel/freq, 0);
         ped.pos.x += move.dw;
         ped.pos.y += move.dh;
+        history[ped.id].x.insert(ped.pos.x)
+        history[ped.id].y.insert(ped.pos.y)
 
         weight = gaussian_prob((final_angle - goal_angle) / ModelParams::NOISE_GOAL_ANGLE, 1) /
                  gaussian_prob((final_angle - final_mean) / ModelParams::NOISE_GOAL_ANGLE, 1) ;
@@ -420,6 +423,8 @@ void WorldModel::PedStepDeterministic(PedStruct& ped, int step) {
 
     ped.pos.x += goal_vec.dw;
     ped.pos.y += goal_vec.dh;
+    history[ped.id].x.insert(ped.pos.x)
+    history[ped.id].y.insert(ped.pos.y)
 }
 
 double WorldModel::pedMoveProb(COORD prev, COORD curr, int goal_id) {
