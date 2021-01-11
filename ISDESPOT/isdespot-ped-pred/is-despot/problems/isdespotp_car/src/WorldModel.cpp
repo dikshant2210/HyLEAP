@@ -335,8 +335,20 @@ void WorldModel::PedStep(PedStruct &ped, Random& random) {
         assert((!std::isnan(move.dw)) && (!std::isnan(move.dh)));
     }
 
-    ped.pos.x += move.dw;
-    ped.pos.y += move.dh;
+//    ped.pos.x += move.dw;
+//    ped.pos.y += move.dh;
+
+    if(use_path_prediction) {
+        //TODO ... update using path_prediction
+        ped.pos.x = predicted_path[ped.id].x[0];
+        ped.pos.y = predicted_path[ped.id].y[0];
+//        clog << ped.pos.x << endl;
+    }
+    else {
+        ped.pos.x += move.dw;
+        ped.pos.y += move.dh;
+    }
+
     return;
 }
 
@@ -398,8 +410,17 @@ double WorldModel::ISPedStep(CarStruct &car, PedStruct &ped, Random& random) {
 
         //TODO noisy speed
         MyVector move(final_angle, ped.vel/freq, 0);
-        ped.pos.x += move.dw;
-        ped.pos.y += move.dh;
+
+        if(use_path_prediction) {
+            //TODO ... update using path_prediction
+            ped.pos.x = predicted_path[ped.id].x[0];
+            ped.pos.y = predicted_path[ped.id].y[0];
+//        clog << ped.pos.x << endl;
+        }
+        else {
+            ped.pos.x += move.dw;
+            ped.pos.y += move.dh;
+        }
 
         weight = gaussian_prob((final_angle - goal_angle) / ModelParams::NOISE_GOAL_ANGLE, 1) /
                  gaussian_prob((final_angle - final_mean) / ModelParams::NOISE_GOAL_ANGLE, 1) ;

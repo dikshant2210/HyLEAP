@@ -1,6 +1,7 @@
 #include "solver/despot.h"
 #include "solver/pomcp.h"
 #include <thread>
+#include "iostream"
 
 DESPOT::DESPOT(const DSPOMDP* model, ScenarioLowerBound* lb, ScenarioUpperBound* ub, Belief* belief) :
 	Solver(model, belief),
@@ -326,7 +327,7 @@ ValuedAction DESPOT::Search() {
 
 	root_ = ConstructTree(particles, streams, lower_bound_, upper_bound_,
 		model_, history_, Globals::config.time_per_move, &statistics_);
-
+//    clog << "Tree construction\n";
 	//logi << "[DESPOT::Search] Time for tree construction: "
 	//	<< (get_time_second() - start) << "s" << endl;
 

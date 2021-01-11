@@ -36,12 +36,13 @@ public:
         message *m = conn.receiveMessage();
 
 
-        cout << "Initial message received\n";
+        clog << "Initial message received\n";
 
         n_peds =  (int) m->pedestrianPositions.size();
         pomdp.num = n_peds;
+        worldModel.n_peds = n_peds;
 
-        cout << "Set number of pedestrians in scene = " << n_peds << "\n";
+        clog << "Set number of pedestrians in scene = " << n_peds << "\n";
 
 
         world_state.car.pos = 0;
@@ -55,6 +56,10 @@ public:
 			world_state.peds[i].pos = COORD(ped.first,ped.second);
             world_state.peds[i].id = i;
         }
+        for(int i = 0; i < n_peds; i++) {
+            PedHistory h(world_state.peds[i].pos.x, world_state.peds[i].pos.y);
+            worldModel.history.push_back(h);
+        }
 
         int num_of_peds_world = n_peds;
 
@@ -62,13 +67,13 @@ public:
 
 		conn.sendMessage("START\n");
 
-        cout << "Starting...\n";
+        clog << "Starting...\n";
+        clog << "Episode Length: " << ModelParams::MAX_EPISODE_LENGTH << endl;
 
         for(int step=0; step < ModelParams::MAX_EPISODE_LENGTH; step++) {
             //ModelParams::numUpperBound = 0;
             //ModelParams::numLowerBound = 0;
             //ModelParams::numDefault = 0;
-
 
             cout << "====================" << "step= " << step << endl;
 
@@ -105,6 +110,27 @@ public:
                 world_state.peds[i].goal = -1;
                 world_state.peds[i].pos = COORD(ped.first,ped.second);
                 world_state.peds[i].id = i;
+            }
+
+            if(step < 40) {
+                for(int i = 0; i < n_peds; i++) {
+                    worldModel.history[i].x.push_back(world_state.peds[i].pos.x);
+                    worldModel.history[i].y.push_back(world_state.peds[i].pos.y);
+                }
+            }
+            else {
+                for(int i = 0; i < n_peds; i++) {
+                    worldModel.history[i].x.push_back(world_state.peds[i].pos.x);
+                    worldModel.history[i].y.push_back(world_state.peds[i].pos.y);
+                    worldModel.history[i].x.erase(worldModel.history[i].x.begin());
+                    worldModel.history[i].y.erase(worldModel.history[i].y.begin());
+                }
+                //TODO ... store predicted path in predicted_path
+                worldModel.use_path_prediction = true;
+                for(int i = 0; i < n_peds; i++) {
+                    PedHistory h(worldModel.history[i].x.back(), worldModel.history[i].y.back());
+                    worldModel.predicted_path.push_back(h);
+                }
             }
 
             COORD &pathPos = worldModel.path[world_state.car.pos];
@@ -145,7 +171,9 @@ public:
             // TODO Update the belief
             beliefTracker.update();
 
-            vector<PomdpState> samples = beliefTracker.sample(1500);//samples are used to construct particle belief. num_scenarios is the number of scenarios sampled from particles belief to construct despot
+            vector<PomdpState> samples = beliefTracker.sample(1500);
+            //samples are used to construct particle belief.
+            // num_scenarios is the number of scenarios sampled from particles belief to construct despot
             vector<State*> particles = pomdp.ConstructParticles(samples);
             ParticleBelief* pb = new ParticleBelief(particles, &pomdp);
 
@@ -159,7 +187,7 @@ public:
 
             delete pb;
 
-            cout << "act= " << act << endl;
+//            clog << "act= " << act << endl;
 
             /*
              * 	enum {
@@ -250,15 +278,15 @@ int main(int argc, char** argv) {
     Random::RANDOM = Random(seed);
     cerr << "Initialized global random generator with seed " << seed << endl;
 
-    cout << "Connect to server ...\n";
+    clog << "Connect to server ...\n";
 
     connector conn;
     conn.establish_connection(port);
     conn.sendMessage("RESET\n");
 
     Simulator sim;
-    for(long i=0;; i++){
-        cout<<"++++++++++++++++++++++ ROUND "<<i<<" ++++++++++++++++++++"<<endl;
+    for(long i=0; i < 10; i++){
+        clog<<"++++++++++++++++++++++ ROUND "<<i<<" ++++++++++++++++++++"<<endl;
         sim.run(conn);
     }
 }

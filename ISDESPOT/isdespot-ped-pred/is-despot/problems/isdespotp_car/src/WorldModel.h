@@ -1,6 +1,8 @@
 #pragma once
 #include"state.h"
 #include"Path.h"
+#include "param.h"
+
 
 /* Belief over ONE pedestrian */
 struct PedBelief {
@@ -10,6 +12,14 @@ struct PedBelief {
     std::vector<double> prob_goals;
     int sample_goal() const;
     int maxlikely_goal() const;
+};
+
+struct PedHistory{
+    std::vector<double> x, y;
+    PedHistory(double pos_x, double pos_y){
+        x.push_back(pos_x);
+        y.push_back(pos_y);
+    }
 };
 
 class WorldModel {
@@ -52,6 +62,11 @@ public:
     std::vector<double> goals;
     double freq;
     double in_front_angle_cos;
+    int n_peds;
+
+    std::vector<PedHistory> history;
+    std::vector<PedHistory> predicted_path;
+    bool use_path_prediction = false;
 };
 
 class WorldStateTracker {
