@@ -111,6 +111,7 @@ public:
                 world_state.peds[i].pos = COORD(ped.first,ped.second);
                 world_state.peds[i].id = i;
             }
+            // log the path of pedestrian
             clog << world_state.peds[0].pos << "\n";
 
             if(step < 40) {
