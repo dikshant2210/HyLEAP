@@ -111,6 +111,7 @@ public:
                 world_state.peds[i].pos = COORD(ped.first,ped.second);
                 world_state.peds[i].id = i;
             }
+            clog << world_state.peds[0].pos << "\n";
 
             if(step < 40) {
                 for(int i = 0; i < n_peds; i++) {
@@ -285,7 +286,7 @@ int main(int argc, char** argv) {
     conn.sendMessage("RESET\n");
 
     Simulator sim;
-    for(long i=0; i < 10; i++){
+    for(long i=0;; i++){
         clog<<"++++++++++++++++++++++ ROUND "<<i<<" ++++++++++++++++++++"<<endl;
         sim.run(conn);
     }
