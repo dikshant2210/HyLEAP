@@ -1,26 +1,19 @@
 import os
-import cv2
-import numpy as np
 import random
-import skimage.io
-from scipy import stats
+
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 import time
-import sys
 from utils_ import *
 from visualize_result import *
 
-from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D, Reshape, Lambda, RepeatVector, Dropout, Activation, Flatten
-from keras.layers.merge import dot, add, multiply, concatenate
-from keras.engine import Layer
+from keras.layers import Input, Dense, Lambda, RepeatVector
+from keras.layers.merge import concatenate
 from keras.layers.wrappers import TimeDistributed
-from keras.layers.recurrent import LSTM, SimpleRNN, GRU
-from keras.models import Model, Sequential
-from keras.optimizers import SGD, Adam, Adadelta
+from keras.layers.recurrent import GRU
+from keras.models import Model
+from keras.optimizers import Adam
 from keras import backend as K
-from tensorflow import convert_to_tensor
-import tensorflow as tf
 import argparse
 from tslearn.clustering import TimeSeriesKMeans
 from tslearn.utils import to_time_series_dataset
@@ -300,4 +293,5 @@ if __name__ == '__main__':
     #     ###################################VISUALIZATION#################################
     #     visualize_result(predictions, probs, obs_test, pred_test, test_paths, test_images)
     #     ###########################################################################
+
 
