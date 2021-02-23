@@ -19,4 +19,6 @@ add_executable(smart_car
         src/simulator.cpp
         src/state.h
         src/WorldModel.cpp
-        src/WorldModel.h)
+        src/WorldModel.h
+        src/path_connector.cpp
+        src7path_connector.h)

@@ -2,6 +2,7 @@
 #include "solver/despot.h"
 #include "connector.h"
 #include "HybridDespot.h"
+#include "path_connector.h"
 #include<random>
 #include<ctime>
 
@@ -43,7 +44,6 @@ public:
         worldModel.n_peds = n_peds;
 
         clog << "Set number of pedestrians in scene = " << n_peds << "\n";
-
 
         world_state.car.pos = 0;
         world_state.car.vel = 0;
@@ -114,7 +114,7 @@ public:
             // log the path of pedestrian
             clog << world_state.peds[0].pos << "\n";
 
-            if(step < 40) {
+            if(step < 9) {
                 for(int i = 0; i < n_peds; i++) {
                     worldModel.history[i].x.push_back(world_state.peds[i].pos.x);
                     worldModel.history[i].y.push_back(world_state.peds[i].pos.y);
@@ -128,7 +128,8 @@ public:
                     worldModel.history[i].y.erase(worldModel.history[i].y.begin());
                 }
                 //TODO ... store predicted path in predicted_path
-                worldModel.use_path_prediction = true;
+                worldModel.use_path_prediction = false;
+                vector<PedHistory> prediction = getPredictedPath(worldModel.history);
                 for(int i = 0; i < n_peds; i++) {
                     PedHistory h(worldModel.history[i].x.back(), worldModel.history[i].y.back());
                     worldModel.predicted_path.push_back(h);
