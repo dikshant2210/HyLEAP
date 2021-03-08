@@ -9,5 +9,12 @@
 
 #include "WorldModel.h"
 
+class PathConnector {
+public:
+    void establish_connection();
+    vector<PedHistory> getPredictedPath(vector<PedHistory>& ped_history);
+    void closeConnection();
 
-vector<PedHistory> getPredictedPath(vector<PedHistory> ped_history);
+    int socket_desc;
+    struct sockaddr_in server;
+};

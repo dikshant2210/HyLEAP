@@ -16,7 +16,7 @@ public:
     typedef pair<float, Pedestrian> PedDistPair;
 
     int observation_size = 4 + 2*NUM_PEDESTRIANS;
-    void run(connector& conn) {
+    void run(connector& conn, PathConnector& path_conn) {
         worldModel = WorldModel();
 
         WorldStateTracker stateTracker(worldModel);
@@ -129,7 +129,7 @@ public:
                 }
                 //TODO ... store predicted path in predicted_path
                 worldModel.use_path_prediction = false;
-                vector<PedHistory> prediction = getPredictedPath(worldModel.history);
+                vector<PedHistory> prediction = path_conn.getPredictedPath(worldModel.history);
                 for(int i = 0; i < n_peds; i++) {
                     PedHistory h(worldModel.history[i].x.back(), worldModel.history[i].y.back());
                     worldModel.predicted_path.push_back(h);
@@ -287,9 +287,12 @@ int main(int argc, char** argv) {
     conn.establish_connection(port);
     conn.sendMessage("RESET\n");
 
+    PathConnector path_conn;
+    path_conn.establish_connection();
+
     Simulator sim;
     for(long i=0;; i++){
         clog<<"++++++++++++++++++++++ ROUND "<<i<<" ++++++++++++++++++++"<<endl;
-        sim.run(conn);
+        sim.run(conn, path_conn);
     }
 }

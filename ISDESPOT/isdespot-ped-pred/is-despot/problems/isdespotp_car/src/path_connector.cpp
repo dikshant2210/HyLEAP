@@ -11,10 +11,7 @@
 
 using namespace std;
 
-vector<PedHistory> getPredictedPath(vector<PedHistory> ped_history) {
-    int socket_desc;
-    struct sockaddr_in server;
-
+void PathConnector::establish_connection() {
     socket_desc = socket(AF_INET , SOCK_STREAM , 0);
 
     if (socket_desc == -1)
@@ -30,10 +27,9 @@ vector<PedHistory> getPredictedPath(vector<PedHistory> ped_history) {
         clog << "Cannot connect to the server!\n";
         close(socket_desc);
     }
-//    else
-//        clog << "Connected\n";
+}
 
-//    clog << "History: " << ped_history.size() << endl;
+vector<PedHistory> PathConnector::getPredictedPath(vector <PedHistory> &ped_history) {
     string s;
     for(int i = 0; i < ped_history.size(); i++) {
         PedHistory h = ped_history[i];
@@ -45,23 +41,23 @@ vector<PedHistory> getPredictedPath(vector<PedHistory> ped_history) {
         }
         break;
     }
-//    const char* message = "This is the message!";
-//    clog << "message created\n";
+
     const char *message = s.c_str();
     if (send(socket_desc, message, strlen(message), 0) < 0) {
         clog << "Send failed\n";
         close(socket_desc);
     }
-//    else
-//        clog << "Data sent!\n";
 
-    char server_reply[200];
+    char server_reply[2048];
     if(recv(socket_desc, server_reply, 200, 0) < 0) {
         clog << "Received failed\n";
         close(socket_desc);
     }
     puts(server_reply);
-    close(socket_desc);
     vector<PedHistory> temp;
     return  temp;
+}
+
+void PathConnector::closeConnection() {
+    close(socket_desc);
 }
